@@ -3,21 +3,22 @@ from tutorial.snippets.models import Snippet, LANGUAGE_CHOICES, STYLE_CHOICES
 from django.contrib.auth.models import User
 
 
-class SnippetSerializer(serializers.ModelSerializer):
+class SnippetSerializer(serializers.HyperlinkedModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
+    highlight = serializers.HyperlinkedIdentityField(view_name='snippet-highlight', format='html')
 
     class Meta:
         model = Snippet
         fields = (
-            'id', 'title', 'code', 'linenos', 'language', 'style', 'owner'
+            'url', 'id', 'highlight', 'title', 'code', 'linenos', 'language', 'style', 'owner'
         )
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.HyperlinkedModelSerializer):
     snippets = serializers.PrimaryKeyRelatedField(many=True, queryset=Snippet.objects.all())
 
     class Meta:
         model = User
         fields = (
-            'id', 'username', 'snippets'
+            'url', 'id', 'username', 'snippets'
         )
